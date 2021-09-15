@@ -11,11 +11,16 @@ class Game():
         self.running = False
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((self.field_width, self.window_height))
-        self.player = Player(30*5 +1,30*4+1,5)
-        self.ghost = Ghost(31,31,5)
+        self.player = ''
+        self.ghost = ''
         self.font = pygame.font.Font(pygame.font.get_default_font(), 24)
+        self.algos = [{'name': 'bfs', 'colour':(204, 255, 255)},{'name': 'dfs', 'colour':(255, 153, 204)}]
+        self.colour = self.algos[0]['colour']
+        self.current_algo = self.algos[0]['name']
+        self.win = False
 
         pygame.display.set_caption("Pac Man")
+
 
     def start(self):
         self.running = True
@@ -26,23 +31,35 @@ class Game():
         textRect.center = (700, 720//2)
         self.window.blit(text, textRect)
 
-    def closeGame(self):
+    def CheckEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
                if event.key == pygame.K_ESCAPE:
                    self.running = False
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_z:
+                    self.changeAlgo()
 
     def drawYouLose(self):
+        self.window.fill((0,0,0))
         text = self.font.render('You Lose!', True, (255,255,255))
         textRect = text.get_rect()
-        textRect.center = (700, 720//2)
+        textRect.center = (800/2, 720//2)
         self.window.blit(text, textRect)
-        self.window.fill((0,0,0))
         
-            
-    
+        pygame.display.update()
+
+    def drawYouWin(self):
+        self.window.fill((0,0,0))
+        text = self.font.render('You Win!', True, (255,255,255))
+        textRect = text.get_rect()
+        textRect.center = (800/2, 720//2)
+        self.window.blit(text, textRect)
+        
+        pygame.display.update()
+        
     def checkLose(self):
         if self.player.x == self.ghost.x and self.player.y == self.ghost.y:
             self.player.direction = "stop"
@@ -55,10 +72,36 @@ class Game():
                 if level.matrix[i][j] == ".":
                     return 
         self.running = False
+        self.win = True
 
-    def drawWindow(self, level):
+    def setPlayerSpawn(self, level):
+        point = level.getSpawn()
+        self.player = Player(30*point['x'] +1,30*point['y']+1,5)
+        
+    def setGhostSpawn(self, level):
+        point = level.getSpawn()
+        self.ghost = Ghost(30*point['x'] +1,30*point['y']+1,5)
+
+    def changeAlgo(self):
+        if self.current_algo == self.algos[0]['name']:
+            self.current_algo = self.algos[1]['name']
+            self.colour = self.algos[1]['colour']
+        elif self.current_algo == self.algos[1]['name']:
+            self.current_algo = self.algos[0]['name']
+            self.colour = self.algos[0]['colour']
+
+    def useAlgo(self, algo):
+        player_cord = {'x': (self.player.x-1)//30, 'y': (self.player.y-1)//30}
+        ghost_cord = {'x': (self.ghost.x-1)//30, 'y': (self.ghost.y-1)//30}
+        if self.current_algo == 'bfs':
+            algo.bfs(player_cord, ghost_cord)
+        if self.current_algo == 'dfs':
+            algo.dfs(player_cord, ghost_cord)
+
+    def drawWindow(self, level, path):
         self.window.fill((0,0,0))
-        level.drawMap(self.window)
+        level.drawPath(self.window, path, self.colour)
+        level.drawLevel(self.window)
         self.player.drawPlayer(self.window)
         self.ghost.drawGhost(self.window)
         self.drawScore()

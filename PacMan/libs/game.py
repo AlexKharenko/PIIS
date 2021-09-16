@@ -12,9 +12,10 @@ class Game():
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((self.field_width, self.window_height))
         self.player = ''
-        self.ghost = ''
+        self.ghosts_count = 4
+        self.ghosts = []
         self.font = pygame.font.Font(pygame.font.get_default_font(), 24)
-        self.algos = [{'name': 'bfs', 'colour':(204, 255, 255)},{'name': 'dfs', 'colour':(255, 153, 204)}]
+        self.algos = [{'name': 'bfs', 'colour':(204, 255, 255)},{'name': 'dfs', 'colour':(255, 153, 204)},{'name': 'ucs', 'colour':(204, 153, 255)}]
         self.colour = self.algos[0]['colour']
         self.current_algo = self.algos[0]['name']
         self.win = False
@@ -61,10 +62,11 @@ class Game():
         pygame.display.update()
         
     def checkLose(self):
-        if self.player.x == self.ghost.x and self.player.y == self.ghost.y:
-            self.player.direction = "stop"
-            self.ghost.direction = "stop"
-            self.running = False
+        for i in range(self.ghosts_count):
+            if self.player.x == self.ghosts[i].x and self.player.y == self.ghosts[i].y:
+                self.player.direction = "stop"
+                self.ghosts[i].direction = "stop"
+                self.running = False
 
     def checkWin(self, level):
         for i in range(len(level.matrix)):
@@ -78,31 +80,39 @@ class Game():
         point = level.getSpawn()
         self.player = Player(30*point['x'] +1,30*point['y']+1,5)
         
+        
     def setGhostSpawn(self, level):
-        point = level.getSpawn()
-        self.ghost = Ghost(30*point['x'] +1,30*point['y']+1,5)
+        for i in range(self.ghosts_count):
+            point = level.getSpawn()
+            self.ghosts.append(Ghost(30*point['x'] +1,30*point['y']+1,5))
 
     def changeAlgo(self):
         if self.current_algo == self.algos[0]['name']:
             self.current_algo = self.algos[1]['name']
             self.colour = self.algos[1]['colour']
         elif self.current_algo == self.algos[1]['name']:
+            self.current_algo = self.algos[2]['name']
+            self.colour = self.algos[2]['colour']
+        elif self.current_algo == self.algos[2]['name']:
             self.current_algo = self.algos[0]['name']
             self.colour = self.algos[0]['colour']
 
     def useAlgo(self, algo):
         player_cord = {'x': (self.player.x-1)//30, 'y': (self.player.y-1)//30}
-        ghost_cord = {'x': (self.ghost.x-1)//30, 'y': (self.ghost.y-1)//30}
+        ghost_cord = {'x': (self.ghosts[0].x-1)//30, 'y': (self.ghosts[0].y-1)//30}
         if self.current_algo == 'bfs':
             algo.bfs(player_cord, ghost_cord)
         if self.current_algo == 'dfs':
             algo.dfs(player_cord, ghost_cord)
+        if self.current_algo == 'ucs':
+            algo.ucs(player_cord, ghost_cord)
 
     def drawWindow(self, level, path):
         self.window.fill((0,0,0))
         level.drawPath(self.window, path, self.colour)
         level.drawLevel(self.window)
         self.player.drawPlayer(self.window)
-        self.ghost.drawGhost(self.window)
+        for i in range(self.ghosts_count):
+            self.ghosts[i].drawGhost(self.window)
         self.drawScore()
         pygame.display.update()

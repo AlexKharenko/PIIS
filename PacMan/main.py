@@ -5,7 +5,7 @@ sys.path.append("d:/Study/FiveSemester/PIIS/PacMan/libs")
 
 from game import Game
 from level import Level
-from matrix import matrix
+# from matrix import matrix
 from algo import Algorithm
 
 game = Game()
@@ -28,10 +28,12 @@ while game.running:
     game.checkLose()
     game.useAlgo(algo)
     game.player.movePlayer(level, game.window_width, game.window_height)
-    game.ghost.movePlayer(level, game.window_width, game.window_height)
+    for ghost in game.ghosts:
+        ghost.movePlayer(level, game.window_width, game.window_height)
     game.player.eatDot(level)
     game.player.choseDirection(keys)
-    game.ghost.choseDirection()
+    for ghost in game.ghosts:
+        ghost.choseDirection()
 
     game.drawWindow(level, algo.path)
 

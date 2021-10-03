@@ -8,6 +8,7 @@ class Player(Char):
         self.anim_counter = 0
         self.direction = "left"
         self.next_direction = None
+        self.algo_colour = (204, 255, 204)
         self.stand_img = pygame.transform.scale(pygame.image.load('./assets/pacman/pac_stop.png'), (24,24))
         self.walk = {"right": [self.stand_img, pygame.transform.scale(pygame.image.load('./assets/pacman/pac_r1.png'), (24,24)),pygame.transform.scale(pygame.image.load('./assets/pacman/pac_r2.png'), (18,24)), pygame.transform.scale(pygame.image.load('./assets/pacman/pac_r1.png'), (24,24))],
             "left": [self.stand_img, pygame.transform.scale(pygame.image.load('./assets/pacman/pac_l1.png'), (24,24)),pygame.transform.scale(pygame.image.load('./assets/pacman/pac_l2.png'), (18,24)), pygame.transform.scale(pygame.image.load('./assets/pacman/pac_l1.png'), (24,24))],

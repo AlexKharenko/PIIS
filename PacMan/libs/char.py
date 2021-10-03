@@ -6,6 +6,8 @@ class Char():
         self.y = y
         self.speed = speed
         self.cell_w_h = 30
+        self.path = None
+        self.goal_cor = None
         
 
     def checkDirection(self, level, direction, window_height=None, window_width = None):

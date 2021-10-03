@@ -26,16 +26,12 @@ while game.running:
     
     game.checkWin(level)
     game.checkLose()
-    game.useAlgo(algo)
-    game.player.movePlayer(level, game.window_width, game.window_height)
-    for ghost in game.ghosts:
-        ghost.movePlayer(level, game.window_width, game.window_height)
+    game.botPlayer(algo, level)
     game.player.eatDot(level)
-    game.player.choseDirection(keys)
     for ghost in game.ghosts:
-        ghost.choseDirection()
-
-    game.drawWindow(level, algo.path)
+        game.botGhost(algo, level, ghost)
+    
+    game.drawWindow(level)
 
 if game.win:
     game.drawWin()

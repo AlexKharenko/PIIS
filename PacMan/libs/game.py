@@ -97,22 +97,65 @@ class Game():
             self.current_algo = self.algos[0]['name']
             self.colour = self.algos[0]['colour']
 
-    def useAlgo(self, algo):
-        player_cord = {'x': (self.player.x-1)//30, 'y': (self.player.y-1)//30}
-        ghost_cord = {'x': (self.ghosts[0].x-1)//30, 'y': (self.ghosts[0].y-1)//30}
+    def useAlgo(self, algo, ghost_cord, player_cord):
+        player_cord = {'x': player_cord[0], 'y': player_cord[1]}
+        ghost_cord = {'x': ghost_cord[0], 'y': ghost_cord[1]}
         if self.current_algo == 'bfs':
-            algo.bfs(player_cord, ghost_cord)
+            algo.bfs(ghost_cord, player_cord)
         if self.current_algo == 'dfs':
-            algo.dfs(player_cord, ghost_cord)
+            algo.dfs(ghost_cord, player_cord)
         if self.current_algo == 'ucs':
-            algo.ucs(player_cord, ghost_cord)
+            algo.ucs(ghost_cord, player_cord)
 
-    def drawWindow(self, level, path):
+    def checkDirectionFromPath(self, char, path):
+        if path == None or path == []:
+            char.direction = "stop"
+            return 
+        if (char.x-1)//30 - path[0][0] == 1:
+            char.direction = "left"
+            return 
+        elif (char.x-1)//30 - path[0][0] == -1:
+            char.direction = "right"
+            return 
+        elif (char.y-1)//30 - path[0][1] == 1:
+            char.direction = "up"
+            return 
+        elif (char.y-1)//30 - path[0][1] == -1:
+            char.direction = "down"
+            return 
+
+    def botPlayer(self, algo, level):
+        point = self.player.goal_cor
+        if self.player.goal_cor == None:
+            self.player.goal_cor = level.getSpawn()
+            point = self.player.goal_cor
+        if level.matrix[point['y']][point['x']] == "_":
+            self.player.goal_cor = level.getSpawn()
+            point = self.player.goal_cor
+        if (self.player.x-1)%30 == 0 and (self.player.y-1)%30 == 0:
+            algo.astar_search(((self.player.x-1)//30, (self.player.y-1)//30), (point['x'], point['y']))
+            self.player.path = algo.path
+        self.checkDirectionFromPath(self.player, self.player.path)
+        self.player.movePlayer(level, self.window_width, self.window_height)
+
+    def botGhost(self, algo, level, ghost):
+        ghost.goal_cor = ((self.player.x-1)//30, (self.player.y-1)//30)
+        if (ghost.x-1)%30 == 0 and (ghost.y-1)%30 == 0:
+            self.useAlgo(algo, ((ghost.x-1)//30, (ghost.y-1)//30), ghost.goal_cor)
+            algo.restructPath()
+            ghost.path = algo.path
+        self.checkDirectionFromPath(ghost, ghost.path)
+        ghost.movePlayer(level, self.window_width, self.window_height)
+
+
+    def drawWindow(self, level):
         self.window.fill((0,0,0))
-        level.drawPath(self.window, path, self.colour)
+        level.drawPath(self.window, self.player.path, self.player.algo_colour)
+        # for ghost in self.ghosts:
+        #     level.drawPath(self.window, ghost.path, self.colour)
         level.drawLevel(self.window)
         self.player.drawPlayer(self.window)
-        for i in range(self.ghosts_count):
-            self.ghosts[i].drawGhost(self.window)
+        for ghost in self.ghosts:
+            ghost.drawGhost(self.window)
         self.drawScore()
         pygame.display.update()

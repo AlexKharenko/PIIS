@@ -61,8 +61,10 @@ class Level():
 
 
     def drawPath(self, screen, path, colour):
-        for point in path:
-            pygame.draw.rect(screen, colour, (point['x']*30+1, point['y']*30+1, 28, 28))
+        if path != None:
+            for point in path:
+                pygame.draw.rect(screen, colour, (point[0]*30+1, point[1]*30+1, 28, 28))
+        
 
     def drawLevel(self, screen):
         wall_img = pygame.image.load('./assets/wall.png')

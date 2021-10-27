@@ -1,18 +1,22 @@
 import pygame
+import math
+import time
 from player import Player
+from game_state import GameState
 from ghost import Ghost
 pygame.font.init()
 
 class Game():
     def __init__(self):
         self.field_width = 800
-        self.window_width = 600
-        self.window_height = 720
+        self.window_width = 210
+        self.window_height = 300
         self.running = False
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((self.field_width, self.window_height))
         self.player = ''
-        self.ghosts_count = 4
+        self.ghosts_count = 1
+        self.ghosts_random_count = 1
         self.ghosts = []
         self.font = pygame.font.Font(pygame.font.get_default_font(), 24)
         self.algos = [{'name': 'bfs', 'colour':(204, 255, 255)},{'name': 'dfs', 'colour':(255, 153, 204)},{'name': 'ucs', 'colour':(204, 153, 255)}]
@@ -29,7 +33,7 @@ class Game():
     def drawScore(self):
         text = self.font.render('Score: '+str(self.player.score), True, (255,255,255))
         textRect = text.get_rect()
-        textRect.center = (700, 720//2)
+        textRect.center = (700, self.window_height//2)
         self.window.blit(text, textRect)
 
     def CheckEvents(self):
@@ -47,7 +51,7 @@ class Game():
         self.window.fill((0,0,0))
         text = self.font.render('You Lose!', True, (255,255,255))
         textRect = text.get_rect()
-        textRect.center = (800/2, 720//2)
+        textRect.center = (800/2, self.window_height//2)
         self.window.blit(text, textRect)
         
         pygame.display.update()
@@ -56,13 +60,13 @@ class Game():
         self.window.fill((0,0,0))
         text = self.font.render('You Win!', True, (255,255,255))
         textRect = text.get_rect()
-        textRect.center = (800/2, 720//2)
+        textRect.center = (800/2, self.window_height//2)
         self.window.blit(text, textRect)
         
         pygame.display.update()
         
     def checkLose(self):
-        for i in range(self.ghosts_count):
+        for i in range(self.ghosts_count + self.ghosts_random_count):
             if self.player.x == self.ghosts[i].x and self.player.y == self.ghosts[i].y:
                 self.player.direction = "stop"
                 self.ghosts[i].direction = "stop"
@@ -82,7 +86,7 @@ class Game():
         
         
     def setGhostSpawn(self, level):
-        for i in range(self.ghosts_count):
+        for i in range(self.ghosts_count+self.ghosts_random_count):
             point = level.getSpawn()
             self.ghosts.append(Ghost(30*point['x'] +1,30*point['y']+1,5))
 
@@ -124,6 +128,12 @@ class Game():
             char.direction = "down"
             return 
 
+    def updateCharCoords(self):
+        self.player.updateCoordinates()
+        for ghost in self.ghosts:
+            ghost.updateCoordinates()
+        
+
     def botPlayer(self, algo, level):
         point = self.player.goal_cor
         if self.player.goal_cor == None:
@@ -133,26 +143,37 @@ class Game():
             self.player.goal_cor = level.getSpawn()
             point = self.player.goal_cor
         if (self.player.x-1)%30 == 0 and (self.player.y-1)%30 == 0:
-            algo.astar_search(((self.player.x-1)//30, (self.player.y-1)//30), (point['x'], point['y']))
-            self.player.path = algo.path
-        self.checkDirectionFromPath(self.player, self.player.path)
+            self.updateCharCoords()
+            state = GameState(level.matrix)
+            state.setPlayerAndGhostsCords(self.player, self.ghosts)            
+            self.player.root_node = algo.generateTree(state, (point['y'], point['x']))
+            # best_value = algo.minimax(self.player.root_node, -math.inf, math.inf, 0)
+            best_value = algo.expectimax(self.player.root_node, 0)
+            (y, x)=self.findNewCoordsFromNodes(best_value)
+            self.checkDirectionFromPath(self.player, [(x,y)])
         self.player.movePlayer(level, self.window_width, self.window_height)
+
+    def findNewCoordsFromNodes(self, best_value):
+        if len(self.player.root_node.children) == 0:
+            return self.player.coord
+        for child in self.player.root_node.children:
+                if child.value == best_value:
+                    return child.state.player_coords
 
     def botGhost(self, algo, level, ghost):
         ghost.goal_cor = ((self.player.x-1)//30, (self.player.y-1)//30)
         if (ghost.x-1)%30 == 0 and (ghost.y-1)%30 == 0:
+            self.updateCharCoords()
             self.useAlgo(algo, ((ghost.x-1)//30, (ghost.y-1)//30), ghost.goal_cor)
             algo.restructPath()
             ghost.path = algo.path
-        self.checkDirectionFromPath(ghost, ghost.path)
+            self.checkDirectionFromPath(ghost, ghost.path)
         ghost.movePlayer(level, self.window_width, self.window_height)
 
 
     def drawWindow(self, level):
         self.window.fill((0,0,0))
-        level.drawPath(self.window, self.player.path, self.player.algo_colour)
-        # for ghost in self.ghosts:
-        #     level.drawPath(self.window, ghost.path, self.colour)
+        pygame.draw.rect(self.window, self.algos[1]['colour'], (self.player.goal_cor['x']*30+1, self.player.goal_cor['y']*30+1, 28, 28))
         level.drawLevel(self.window)
         self.player.drawPlayer(self.window)
         for ghost in self.ghosts:

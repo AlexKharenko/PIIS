@@ -7,6 +7,7 @@ class Player(Char):
         self.score = 0
         self.anim_counter = 0
         self.direction = "left"
+        self.root_node = None
         self.next_direction = None
         self.algo_colour = (204, 255, 204)
         self.stand_img = pygame.transform.scale(pygame.image.load('./assets/pacman/pac_stop.png'), (24,24))

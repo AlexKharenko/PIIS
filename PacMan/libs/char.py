@@ -8,6 +8,21 @@ class Char():
         self.cell_w_h = 30
         self.path = None
         self.goal_cor = None
+        self.coord = ((self.y-1)//30, (self.x-1)//30)
+
+    def updateCoordinates(self):
+        self.coord = ((self.y-1)//30, (self.x-1)//30)
+
+    def updateCoords(self, w, h):
+        (cx, cy) = self.coord
+        neighbours = [(cx-1, cy), (cx, cy+1), (cx+1, cy), (cx, cy-1)]
+        direction = ['left', 'up', 'right', 'down']
+        for i in range(len(neighbours)):
+            if(neighbours[i][0] >= 0 and neighbours[i][0] < h and neighbours[i][1] >= 0 and neighbours[i][1] < w and  direction[i] == self.direction):
+                self.coord = neighbours[i]
+                return
+        
+        return
         
 
     def checkDirection(self, level, direction, window_height=None, window_width = None):
@@ -29,7 +44,7 @@ class Char():
                 
         if direction == "down":
             if self.y < window_height - self.cell_w_h: 
-                if level.matrix[i+1][j]!="=":
+                if i+1 < level.height and level.matrix[i+1][j]!="=":
                     if (self.x - 1) % self.cell_w_h != 0:
                         return False
                     return True

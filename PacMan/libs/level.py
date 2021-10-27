@@ -3,14 +3,14 @@ import random
 
 class Level():
     def __init__(self, matrix = [[]]):
-        self.width = 20
-        self.height = 24
+        self.width = 7
+        self.height = 7
         self.matrix = matrix 
-        self.max_dots = 400
+        self.max_dots = 40
         self.dots_count = self.width*self.height
 
     def randomWall(self):
-        max_wall = 9
+        max_wall = 3
         min_wall = 1
         count_walls = random.randrange(min_wall, max_wall)
         ways = ['left', 'up', 'rigth', 'down']
@@ -20,11 +20,11 @@ class Level():
         return wall
         
     def getSpawn(self):
-        x = random.randrange(0, self.width-1)
-        y = random.randrange(0, self.height-1)
+        x = random.randrange(0, self.width)
+        y = random.randrange(0, self.height)
         while self.matrix[y][x] != '.':
-            x = random.randrange(0, self.width-1)
-            y = random.randrange(0, self.height-1)
+            x = random.randrange(0, self.width)
+            y = random.randrange(0, self.height)
         return {'x': x, 'y':y}
 
     def levelGenerate(self):
@@ -56,9 +56,6 @@ class Level():
                         self.matrix[y-1][x] = "="
                         self.dots_count-=1
 
-        
-            
-
 
     def drawPath(self, screen, path, colour):
         if path != None:
@@ -76,5 +73,11 @@ class Level():
                         screen.blit(wall_img, (30*j, 30*i))
                     if self.matrix[i][j] == ".":
                         screen.blit(dot_img, (30*j, 30*i))
+
+    def setCharacters(self, player, ghosts):
+        self.matrix[player.coord[0]][player.coord[1]] = "_"
+        for ghost in ghosts:
+            self.matrix[ghost.coord[0]][ghost.coord[1]] = "_"
+        
 
     

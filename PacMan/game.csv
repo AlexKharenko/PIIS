@@ -61,3 +61,8 @@ False,0.2501,20,expectimax
 False,0.6361,40,expectimax
 False,0.7347,40,expectimax
 False,18.5847,350,expectimax
+False,1.0549,40,minimax
+False,4.9069,150,minimax
+False,0.9769,30,expectimax
+False,0.0427,10,expectimax
+False,7.0643,240,expectimax

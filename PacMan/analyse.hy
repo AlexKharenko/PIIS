@@ -48,7 +48,6 @@
 (setv y_train (get split 2))
 (setv y_valid (get split 3))
 
-
 (setv cat_cols ["Win" "Algorythm"])
 (setv encoder (OrdinalEncoder))
 (assoc x_train cat_cols (encoder.fit_transform (get x_train cat_cols)))
@@ -58,7 +57,7 @@
 (setv model (LinearRegression))
 (model.fit x_train y_train)
 ;; (print model.coef_)
-(print (+ "R2 score:" (str (model.score x_valid  y_valid))))
+(print (+ "R^2 score:" (str (model.score x_valid  y_valid))))
 
 
 (setv x_test (get (split_data test_data) 0))
@@ -70,7 +69,6 @@
 
 (setv stats (pd.DataFrame {
     "prediction" (np.abs (- y_test y_pred))
-    "real" (np.abs(- y_test (y_train.mean)))
  }))
 
 (print stats)

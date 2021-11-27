@@ -15,3 +15,8 @@ class Node:
     def __lt__(self, other):
          return self.f < other.f
 
+    def __str__(self) -> str:
+        output = str(self.state.matrix) + " \nValue: " + str(self.value) + "\n"
+        strings = '\n'.join(map(lambda x: '\n'.join(map(lambda y: " " + y,str(x).split('\n'))), self.children))
+        output += '{\n' + strings + '}\n' if strings != '' else ''
+        return output

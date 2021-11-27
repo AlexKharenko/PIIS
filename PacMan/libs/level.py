@@ -2,9 +2,9 @@ import pygame
 import random
 
 class Level():
-    def __init__(self, matrix = [[]]):
-        self.width = 7
-        self.height = 7
+    def __init__(self, matrix = [[]], width = 7, height = 7):
+        self.width = width
+        self.height = height
         self.matrix = matrix 
         self.max_dots = 40
         self.dots_count = self.width*self.height

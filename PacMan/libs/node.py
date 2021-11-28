@@ -16,7 +16,7 @@ class Node:
          return self.f < other.f
 
     def __str__(self) -> str:
-        output = str(self.state.matrix) + " \nValue: " + str(self.value) + "\n"
+        output = str(self.state.matrix) + " \nValue: " + str(self.value) + "\n" + str(self.state.player_coords) + "\n" + str(self.state.ghosts_coords) +"\n"
         strings = '\n'.join(map(lambda x: '\n'.join(map(lambda y: " " + y,str(x).split('\n'))), self.children))
         output += '{\n' + strings + '}\n' if strings != '' else ''
         return output

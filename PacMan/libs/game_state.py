@@ -24,6 +24,6 @@ class GameState:
 
     def change_ghost_position(self, ghost_id, new_coord):
         new_matrix = deepcopy(self.matrix)
-        new_ghost_coords = self.ghosts_coords
+        new_ghost_coords = copy(self.ghosts_coords)
         new_ghost_coords[ghost_id] = new_coord
         return GameState(new_matrix, self.player_coords, new_ghost_coords, self.score)

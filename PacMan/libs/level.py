@@ -2,7 +2,7 @@ import pygame
 import random
 
 class Level():
-    def __init__(self, matrix = [[]], width = 7, height = 7):
+    def __init__(self, matrix = [[]], width = 10, height = 10):
         self.width = width
         self.height = height
         self.matrix = matrix 
@@ -22,7 +22,7 @@ class Level():
     def getSpawn(self):
         x = random.randrange(0, self.width)
         y = random.randrange(0, self.height)
-        while self.matrix[y][x] != '.':
+        while self.matrix[y][x] != 1:
             x = random.randrange(0, self.width)
             y = random.randrange(0, self.height)
         return {'x': x, 'y':y}
@@ -30,30 +30,30 @@ class Level():
     def levelGenerate(self):
         self.matrix = []
         for row in range(self.height):
-            self.matrix.append(['.']*self.width)
+            self.matrix.append([1]*self.width)
         while self.max_dots < self.dots_count:
             # print(self.dots_count)
             x = random.randrange(0, self.width-1)
             y = random.randrange(0, self.height-1)
-            # self.matrix[y][x] = "="
+            # self.matrix[y][x] = 0
 
             wall = self.randomWall()
             for point in wall:
                 if point == "left" and x > 0:
-                    if self.matrix[y][x-1] == ".":
-                        self.matrix[y][x-1] = "="
+                    if self.matrix[y][x-1] == 1:
+                        self.matrix[y][x-1] = 0
                         self.dots_count-=1
                 if point == "right" and x < self.width-1:
-                    if self.matrix[y][x+1] == ".":
-                        self.matrix[y][x+1] = "="
+                    if self.matrix[y][x+1] == 1:
+                        self.matrix[y][x+1] = 0
                         self.dots_count-=1
                 if point == "down" and y < self.height-1:
-                    if self.matrix[y+1][x] == ".":
-                        self.matrix[y+1][x] = "="
+                    if self.matrix[y+1][x] == 1:
+                        self.matrix[y+1][x] = 0
                         self.dots_count-=1
                 if point == "up" and y > 0:
-                    if self.matrix[y-1][x] == ".":
-                        self.matrix[y-1][x] = "="
+                    if self.matrix[y-1][x] == 1:
+                        self.matrix[y-1][x] = 0
                         self.dots_count-=1
 
 
@@ -69,15 +69,15 @@ class Level():
         if self.matrix != None:
             for i in range(self.height):
                 for j in range(self.width):
-                    if self.matrix[i][j] == "=":
+                    if self.matrix[i][j] == 0:
                         screen.blit(wall_img, (30*j, 30*i))
-                    if self.matrix[i][j] == ".":
+                    if self.matrix[i][j] == 1:
                         screen.blit(dot_img, (30*j, 30*i))
 
     def setCharacters(self, player, ghosts):
-        self.matrix[player.coord[0]][player.coord[1]] = "_"
+        self.matrix[player.coord[0]][player.coord[1]] = 2
         for ghost in ghosts:
-            self.matrix[ghost.coord[0]][ghost.coord[1]] = "_"
+            self.matrix[ghost.coord[0]][ghost.coord[1]] = 2
         
 
     

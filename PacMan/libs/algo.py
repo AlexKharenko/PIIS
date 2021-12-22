@@ -17,26 +17,26 @@ class Algorithm():
     def getNeighbours(self, point):
         neighbours = []
         if point['x'] > 0 and point['x'] < self.col-1:
-            if self.matrix[point['y']][point['x']-1] != "=":
+            if self.matrix[point['y']][point['x']-1] != 0:
                 neighbours.append({"x": point['x']-1, "y": point['y']})
-            if self.matrix[point['y']][point['x']+1] != "=":
+            if self.matrix[point['y']][point['x']+1] != 0:
                 neighbours.append({"x": point['x']+1, "y": point['y']})
         if point['x'] == 0:
-            if self.matrix[point['y']][point['x']+1] != "=":
+            if self.matrix[point['y']][point['x']+1] != 0:
                 neighbours.append({"x": point['x']+1, "y": point['y']})
         if point['x'] == self.col-1:
-            if self.matrix[point['y']][point['x']-1] != "=":
+            if self.matrix[point['y']][point['x']-1] != 0:
                 neighbours.append({"x": point['x']-1, "y": point['y']})
         if point['y'] > 0 and point['y'] < self.rows-1:
-            if self.matrix[point['y']-1][point['x']] != "=":
+            if self.matrix[point['y']-1][point['x']] != 0:
                 neighbours.append({"y": point['y']-1, "x": point['x']})
-            if self.matrix[point['y']+1][point['x']] != "=":
+            if self.matrix[point['y']+1][point['x']] != 0:
                 neighbours.append({"y": point['y']+1, "x": point['x']})
         if point['y'] == 0:
-            if self.matrix[point['y']+1][point['x']] != "=":
+            if self.matrix[point['y']+1][point['x']] != 0:
                 neighbours.append({"y": point['y']+1, "x": point['x']})
         if point['y'] == self.rows-1:
-            if self.matrix[point['y']-1][point['x']] != "=":
+            if self.matrix[point['y']-1][point['x']] != 0:
                 neighbours.append({"y": point['y']-1, "x": point['x']})
         return neighbours
 
@@ -220,7 +220,7 @@ class Algorithm():
         neighbours = [(cx-1, cy), (cx, cy+1), (cx+1, cy), (cx, cy-1)]
         neighbours = list(filter(
             lambda node: node[0] >= 0 and node[0] < len(
-                state.matrix) and node[1] >= 0 and node[1] < len(state.matrix[0]) and state.matrix[node[0]][node[1]] != "=",
+                state.matrix) and node[1] >= 0 and node[1] < len(state.matrix[0]) and state.matrix[node[0]][node[1]] != 0,
             neighbours
         ))
 

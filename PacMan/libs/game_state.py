@@ -16,9 +16,9 @@ class GameState:
     def change_player_position(self, new_coord):
         new_matrix = deepcopy(self.matrix)
         new_score = self.score
-        if(new_matrix[new_coord[0]][new_coord[1]] == "."):
+        if(new_matrix[new_coord[0]][new_coord[1]] == 1):
             new_score += 10
-        new_matrix[new_coord[0]][new_coord[1]] = "_"
+        new_matrix[new_coord[0]][new_coord[1]] = 2
         new_player_coords = new_coord
         return GameState(new_matrix, new_player_coords, self.ghosts_coords, new_score)
 

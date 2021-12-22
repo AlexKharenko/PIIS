@@ -1,4 +1,5 @@
 import pygame
+from math import sqrt, pow
 
 class Char():
     def __init__(self, x, y, speed):
@@ -35,7 +36,7 @@ class Char():
 
         if direction == "up":
             if self.y >= self.speed: 
-                if level.matrix[i-1][j]!="=" or i==0:
+                if level.matrix[i-1][j]!=0 or i==0:
                     if (self.x - 1) % self.cell_w_h != 0:
                         return False
                     return True
@@ -44,13 +45,13 @@ class Char():
                 
         if direction == "down":
             if self.y < window_height - self.cell_w_h: 
-                if i+1 < level.height and level.matrix[i+1][j]!="=":
+                if i+1 < level.height and level.matrix[i+1][j]!=0:
                     if (self.x - 1) % self.cell_w_h != 0:
                         return False
                     return True
         if direction == "left":
             if self.x >= self.speed: 
-                if level.matrix[i][j-1]!="=" or j==0:
+                if level.matrix[i][j-1]!=0 or j==0:
                     if (self.y - 1) % self.cell_w_h != 0:
                         return False
                     return True
@@ -58,7 +59,7 @@ class Char():
                     return True
         if direction == "right":
             if self.x < window_width - self.cell_w_h: 
-                if level.matrix[i][j+1]!="=":
+                if level.matrix[i][j+1]!=0:
                     if (self.y - 1) % self.cell_w_h != 0:
                         return False
                     return True
@@ -74,12 +75,21 @@ class Char():
                 self.x-=self.speed
             elif self.direction == "right":
                 self.x+=self.speed
+            return True
         else:
             self.direction = "stop"
             if self.checkDirection(level, self.next_direction, window_height, window_width):
                 self.direction = self.next_direction
                 self.next_direction = None
+            return False
         
+    def get_distance_between_coordinates(coord1, coord2):
+        (x1, y1) = coord1
+        (x2, y2) = coord2
+        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
+
+    def check_collision(self, character):
+        return Char.get_distance_between_coordinates((self.x, self.y), (character.x, character.y)) <= 30 * 0.4
 
    
     
